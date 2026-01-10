@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pencil, Trash2, Reply, User, Shield, Check, X } from "lucide-react";
+import { Pencil, Trash2, Reply, Shield, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { EmojiInput } from "@/components/ui/emoji-input";

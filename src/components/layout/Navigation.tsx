@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { LucideIcon, User, MessageSquare, LayoutDashboard, Users } from "lucide-react";
+import { User, MessageSquare, LayoutDashboard, type LucideIcon } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 import { cn } from "@/lib/utils";
 
