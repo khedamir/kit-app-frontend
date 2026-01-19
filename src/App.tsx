@@ -139,10 +139,13 @@ function AppRoutes() {
 }
 
 export default function App() {
+  // Определяем base path для React Router (если приложение развёрнуто в поддиректории)
+  const basename = import.meta.env.BASE_URL || "/";
+
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
+        <BrowserRouter basename={basename}>
           <AppRoutes />
         </BrowserRouter>
       </QueryClientProvider>
