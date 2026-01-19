@@ -5,8 +5,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/auth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { RoleBasedRedirect } from "@/components/RoleBasedRedirect";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { LoginPage } from "@/pages/LoginPage";
+import { RegisterPage } from "@/pages/RegisterPage";
 import { ProfilePage } from "@/pages/ProfilePage";
 import { AdminDashboard } from "@/pages/AdminDashboard";
 import { ForumPage } from "@/pages/ForumPage";
@@ -15,8 +17,36 @@ import { TopicPage } from "@/pages/TopicPage";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 1,
+      retry: (failureCount, error) => {
+        // Не повторяем запросы при 401/403/404
+        if (
+          error &&
+          typeof error === "object" &&
+          "response" in error &&
+          error.response &&
+          typeof error.response === "object" &&
+          "status" in error.response
+        ) {
+          const status = error.response.status as number;
+          if ([401, 403, 404].includes(status)) {
+            return false;
+          }
+        }
+        return failureCount < 1;
+      },
       refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000, // 5 минут
+      gcTime: 10 * 60 * 1000, // 10 минут (было cacheTime)
+    },
+    mutations: {
+      retry: false,
+      onError: (error) => {
+        // Глобальная обработка ошибок мутаций
+        if (import.meta.env.DEV) {
+          // eslint-disable-next-line no-console
+          console.error("Mutation error:", error);
+        }
+      },
     },
   },
 });
@@ -26,7 +56,8 @@ function AppRoutes() {
 
   useEffect(() => {
     checkAuth();
-  }, [checkAuth]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // checkAuth стабилен, не нужно в зависимостях
 
   if (isLoading) {
     return (
@@ -42,6 +73,10 @@ function AppRoutes() {
       <Route
         path="/login"
         element={isAuthenticated ? <RoleBasedRedirect /> : <LoginPage />}
+      />
+      <Route
+        path="/register"
+        element={isAuthenticated ? <RoleBasedRedirect /> : <RegisterPage />}
       />
 
       {/* Student Routes */}
@@ -105,10 +140,12 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Loader2, GraduationCap } from 'lucide-react'
 import { useAuthStore } from '@/store/auth'
 import { Button } from '@/components/ui/button'
@@ -110,6 +111,13 @@ export function LoginPage() {
                 'Войти'
               )}
             </Button>
+
+            <div className="text-center text-sm text-muted-foreground">
+              Нет аккаунта?{" "}
+              <Link className="text-primary hover:underline" to="/register">
+                Зарегистрироваться
+              </Link>
+            </div>
           </form>
         </CardContent>
       </Card>

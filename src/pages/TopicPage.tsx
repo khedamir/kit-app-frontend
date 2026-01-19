@@ -30,6 +30,7 @@ import { MessageForm } from "@/components/forum/MessageForm";
 import { AuthorBadge } from "@/components/forum/AuthorBadge";
 import { useMessages, useUpdateTopic, useDeleteTopic } from "@/hooks/useForum";
 import { useAuthStore } from "@/store/auth";
+import { handleError } from "@/lib/error-handler";
 import { formatFullDate } from "@/lib/date-utils";
 import type { ForumMessage } from "@/types";
 
@@ -80,7 +81,7 @@ export function TopicPage() {
       });
       setShowEditDialog(false);
     } catch (error) {
-      console.error("Failed to update topic:", error);
+      handleError(error, "TopicPage.updateTopic");
     }
   };
 
@@ -91,7 +92,7 @@ export function TopicPage() {
       await deleteTopic.mutateAsync(topic.id);
       navigate("/forum");
     } catch (error) {
-      console.error("Failed to delete topic:", error);
+      handleError(error, "TopicPage.deleteTopic");
     }
   };
 
@@ -105,7 +106,7 @@ export function TopicPage() {
         input: { is_pinned: !topic.is_pinned },
       });
     } catch (error) {
-      console.error("Failed to toggle pin:", error);
+      handleError(error, "TopicPage.togglePin");
     }
   };
 
@@ -119,7 +120,7 @@ export function TopicPage() {
         input: { is_closed: !topic.is_closed },
       });
     } catch (error) {
-      console.error("Failed to toggle close:", error);
+      handleError(error, "TopicPage.toggleClose");
     }
   };
 

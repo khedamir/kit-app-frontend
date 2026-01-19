@@ -11,6 +11,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { EmojiInput } from "@/components/ui/emoji-input";
 import { useCreateTopic } from "@/hooks/useForum";
+import { handleError } from "@/lib/error-handler";
 
 interface CreateTopicDialogProps {
   open: boolean;
@@ -38,7 +39,7 @@ export function CreateTopicDialog({ open, onOpenChange }: CreateTopicDialogProps
       setDescription("");
       onOpenChange(false);
     } catch (error) {
-      console.error("Failed to create topic:", error);
+      handleError(error, "CreateTopicDialog");
     }
   };
 

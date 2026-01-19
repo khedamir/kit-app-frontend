@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
+import { handleError } from "@/lib/error-handler";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1";
@@ -12,9 +13,9 @@ export const apiClient = axios.create({
 
 // Request interceptor для добавления токена
 apiClient.interceptors.request.use(
-  (config) => {
+  (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem("access_token");
-    if (token) {
+    if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
@@ -25,8 +26,10 @@ apiClient.interceptors.request.use(
 // Response interceptor для обработки ошибок и refresh token
 apiClient.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+  async (error: AxiosError) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
 
     // Если 401 и это не повторный запрос и не запрос на login/refresh
     if (
@@ -55,13 +58,36 @@ apiClient.interceptors.response.use(
 
           originalRequest.headers.Authorization = `Bearer ${access_token}`;
           return apiClient(originalRequest);
-        } catch {
+        } catch (refreshError) {
           // Refresh failed - очищаем токены
+          handleError(refreshError, "apiClient.refreshToken");
           localStorage.removeItem("access_token");
           localStorage.removeItem("refresh_token");
           window.location.href = "/login";
         }
+      } else {
+        // Нет refresh token - редирект на логин
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        window.location.href = "/login";
       }
+    }
+
+    // Обработка других ошибок
+    if (error.response) {
+      // Сервер вернул ошибку
+      const status = error.response.status;
+      if (status >= 500) {
+        handleError(error, "apiClient.serverError");
+      } else if (status === 404) {
+        handleError(error, "apiClient.notFound");
+      }
+    } else if (error.request) {
+      // Запрос отправлен, но ответа нет
+      handleError(error, "apiClient.networkError");
+    } else {
+      // Ошибка при настройке запроса
+      handleError(error, "apiClient.requestError");
     }
 
     return Promise.reject(error);

@@ -15,6 +15,7 @@ import { useMessagePermissions, useUpdateMessage, useDeleteMessage } from "@/hoo
 import type { ForumMessage } from "@/types";
 import { cn } from "@/lib/utils";
 import { formatShortDate } from "@/lib/date-utils";
+import { handleError } from "@/lib/error-handler";
 
 interface MessageItemProps {
   message: ForumMessage;
@@ -46,7 +47,8 @@ export function MessageItem({ message, topicId, onReply, isReply = false }: Mess
       });
       setIsEditing(false);
     } catch (error) {
-      console.error("Failed to update message:", error);
+      handleError(error, "MessageItem.updateMessage");
+      // Ошибка уже обработана в handleError, можно показать toast если нужно
     }
   };
 
@@ -55,7 +57,8 @@ export function MessageItem({ message, topicId, onReply, isReply = false }: Mess
       await deleteMessage.mutateAsync(message.id);
       setShowDeleteDialog(false);
     } catch (error) {
-      console.error("Failed to delete message:", error);
+      handleError(error, "MessageItem.deleteMessage");
+      // Ошибка уже обработана в handleError, можно показать toast если нужно
     }
   };
 

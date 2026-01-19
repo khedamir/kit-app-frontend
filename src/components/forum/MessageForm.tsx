@@ -3,6 +3,7 @@ import { Send, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmojiInput } from "@/components/ui/emoji-input";
 import { useCreateMessage } from "@/hooks/useForum";
+import { handleError } from "@/lib/error-handler";
 
 interface MessageFormProps {
   topicId: number;
@@ -34,7 +35,7 @@ export function MessageForm({
       setContent("");
       onCancelReply?.();
     } catch (error) {
-      console.error("Failed to send message:", error);
+      handleError(error, "MessageForm");
     }
   };
 

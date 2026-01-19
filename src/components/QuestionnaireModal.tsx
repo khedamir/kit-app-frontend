@@ -18,6 +18,7 @@ import {
   useUpdateInterests,
   useUpdateRoles,
 } from "@/hooks/useStudent";
+import { handleError } from "@/lib/error-handler";
 import type { Role, Interest, StudentSkill, Skill } from "@/types";
 
 interface QuestionnaireModalProps {
@@ -143,7 +144,7 @@ function QuestionnaireModalContent({
       ]);
       onOpenChange(false);
     } catch (error) {
-      console.error("Failed to save questionnaire:", error);
+      handleError(error, "QuestionnaireModal");
     }
   };
 
