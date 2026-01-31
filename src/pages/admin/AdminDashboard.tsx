@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Settings,
   Users,
@@ -6,6 +7,7 @@ import {
   Loader2,
   Edit3,
   Save,
+  ArrowRight,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -180,19 +182,26 @@ export function AdminDashboard() {
         </CardHeader>
       </Card>
 
-      {/* Admin Features Placeholder */}
+      {/* Admin Features */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="border-dashed">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Users className="h-5 w-5 text-primary" />
-              Управление студентами
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">Раздел в разработке</p>
-          </CardContent>
-        </Card>
+        <Link to="/admin/students">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Users className="h-5 w-5 text-primary" />
+                Управление студентами
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-3">
+                Просмотр списка студентов, поиск, фильтрация и управление аккаунтами
+              </p>
+              <span className="text-sm text-primary flex items-center gap-1">
+                Перейти <ArrowRight className="h-4 w-4" />
+              </span>
+            </CardContent>
+          </Card>
+        </Link>
 
         <Card className="border-dashed">
           <CardHeader className="pb-3">

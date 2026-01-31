@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { User, MessageSquare, LayoutDashboard, type LucideIcon } from "lucide-react";
+import { User, MessageSquare, LayoutDashboard, ShoppingBag, Home, type LucideIcon } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 import { cn } from "@/lib/utils";
 
@@ -12,6 +12,12 @@ export interface NavItem {
 
 // Все пункты навигации
 const navItems: NavItem[] = [
+  {
+    to: "/home",
+    label: "Главная",
+    icon: Home,
+    roles: ["student"],
+  },
   {
     to: "/profile",
     label: "Профиль",
@@ -29,12 +35,12 @@ const navItems: NavItem[] = [
     label: "Форум",
     icon: MessageSquare,
   },
-  // Добавляй новые страницы здесь
-  // {
-  //   to: "/teams",
-  //   label: "Команды",
-  //   icon: Users,
-  // },
+  {
+    to: "/shop",
+    label: "Магазин",
+    icon: ShoppingBag,
+    roles: ["student"],
+  },
 ];
 
 // Хук для фильтрации навигации по роли

@@ -10,9 +10,14 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { LoginPage } from "@/pages/LoginPage";
 import { RegisterPage } from "@/pages/RegisterPage";
 import { ProfilePage } from "@/pages/ProfilePage";
-import { AdminDashboard } from "@/pages/AdminDashboard";
+import { RecommendationsPage } from "@/pages/RecommendationsPage";
+import { ShopPage } from "@/pages/ShopPage";
+import { HomePage } from "@/pages/HomePage";
+import { StudentsManagementPage } from "@/pages/admin/StudentsManagementPage";
+import { AdminDashboard } from "@/pages/admin/AdminDashboard";
 import { ForumPage } from "@/pages/ForumPage";
 import { TopicPage } from "@/pages/TopicPage";
+import { RatingPage } from "@/pages/RatingPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -87,7 +92,11 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       >
+        <Route path="/home" element={<HomePage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/recommendations" element={<RecommendationsPage />} />
+        <Route path="/rating" element={<RatingPage />} />
+        <Route path="/shop" element={<ShopPage />} />
       </Route>
 
       {/* Admin Routes */}
@@ -99,6 +108,7 @@ function AppRoutes() {
         }
       >
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/students" element={<StudentsManagementPage />} />
       </Route>
 
       {/* Common Routes (for all authenticated users) */}

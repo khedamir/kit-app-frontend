@@ -4,6 +4,8 @@ import type {
   StudentProfileUpdate,
   SkillMap,
   SkillInput,
+  RecommendationsResponse,
+  RatingResponse,
 } from "@/types";
 
 export const studentApi = {
@@ -40,5 +42,40 @@ export const studentApi = {
 
   updateRoles: async (roleIds: number[]): Promise<void> => {
     await apiClient.put("/students/me/roles", roleIds);
+  },
+
+  // Recommendations
+  getRecommendations: async (
+    interestsPage = 1,
+    interestsPerPage = 20,
+    rolesPage = 1,
+    rolesPerPage = 20
+  ): Promise<RecommendationsResponse> => {
+    const { data } = await apiClient.get<RecommendationsResponse>(
+      "/students/me/recommendations",
+      {
+        params: {
+          interests_page: interestsPage,
+          interests_per_page: interestsPerPage,
+          roles_page: rolesPage,
+          roles_per_page: rolesPerPage,
+        },
+      }
+    );
+    return data;
+  },
+
+  // Get student by ID
+  getStudentById: async (studentId: number): Promise<SkillMap> => {
+    const { data } = await apiClient.get<SkillMap>(`/students/${studentId}`);
+    return data;
+  },
+
+  // Rating
+  getRating: async (page = 1, perPage = 20): Promise<RatingResponse> => {
+    const { data } = await apiClient.get<RatingResponse>("/students/rating", {
+      params: { page, per_page: perPage },
+    });
+    return data;
   },
 };

@@ -6,6 +6,8 @@ export const studentKeys = {
   all: ['student'] as const,
   profile: () => [...studentKeys.all, 'profile'] as const,
   skillMap: () => [...studentKeys.all, 'skill-map'] as const,
+  recommendations: () => [...studentKeys.all, 'recommendations'] as const,
+  rating: () => [...studentKeys.all, 'rating'] as const,
 }
 
 export function useStudentProfile() {
@@ -67,3 +69,41 @@ export function useUpdateRoles() {
   })
 }
 
+export function useRecommendations(
+  interestsPage = 1,
+  interestsPerPage = 20,
+  rolesPage = 1,
+  rolesPerPage = 20
+) {
+  return useQuery({
+    queryKey: [
+      ...studentKeys.recommendations(),
+      interestsPage,
+      interestsPerPage,
+      rolesPage,
+      rolesPerPage,
+    ],
+    queryFn: () =>
+      studentApi.getRecommendations(
+        interestsPage,
+        interestsPerPage,
+        rolesPage,
+        rolesPerPage
+      ),
+  });
+}
+
+export function useStudentById(studentId: number | null) {
+  return useQuery({
+    queryKey: [...studentKeys.all, 'detail', studentId],
+    queryFn: () => studentApi.getStudentById(studentId!),
+    enabled: studentId !== null,
+  });
+}
+
+export function useRating(page = 1, perPage = 20) {
+  return useQuery({
+    queryKey: [...studentKeys.rating(), page, perPage],
+    queryFn: () => studentApi.getRating(page, perPage),
+  });
+}

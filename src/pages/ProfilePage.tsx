@@ -8,11 +8,14 @@ import {
   Save,
   Edit3,
   Coins,
+  Award,
   History,
   Map,
   ArrowRight,
   PenLine,
+  Trophy,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useSkillMap, useUpdateProfile } from "@/hooks/useStudent";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -202,36 +205,61 @@ export function ProfilePage() {
         </CardContent>
       </Card>
 
-      {/* Balance & Skill Map Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Balance Card */}
+      {/* Points, Balance & Skill Map Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Points Card */}
+        <Link to="/rating">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                    <Award className="h-6 w-6 text-amber-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Баллы</p>
+                    <p className="text-2xl font-bold">
+                      {profile.total_points || 0}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 text-primary text-sm">
+                  <Trophy className="h-4 w-4" />
+                  <span className="hidden sm:inline">Рейтинг</span>
+                  <ArrowRight className="h-4 w-4" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        {/* SOM Balance Card */}
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                  <Coins className="h-6 w-6 text-amber-500" />
+                <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
+                  <Coins className="h-6 w-6 text-green-500" />
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Баланс</p>
                   <p className="text-2xl font-bold">
-                    0{" "}
+                    {profile.total_som || 0}{" "}
                     <span className="text-base font-normal text-muted-foreground">
-                      сом
+                      SOM
                     </span>
                   </p>
                 </div>
               </div>
-              <Button variant="outline" size="sm" disabled>
+              <Button variant="ghost" size="sm" disabled title="Скоро">
                 <History className="h-4 w-4" />
-                <span className="hidden sm:inline">История</span>
               </Button>
             </div>
           </CardContent>
         </Card>
 
         {/* Skill Map Card */}
-        <Card>
+        <Card className="hover:shadow-md transition-shadow sm:col-span-2 lg:col-span-1">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -243,10 +271,11 @@ export function ProfilePage() {
                   <p className="text-lg font-medium">Точка роста</p>
                 </div>
               </div>
-              <Button variant="outline" size="sm" disabled>
-                Посмотреть
-                <ArrowRight className="h-4 w-4" />
-              </Button>
+              <Link to="/recommendations">
+                <Button variant="outline" size="sm">
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>

@@ -29,6 +29,8 @@ export interface StudentProfile {
   first_name: string | null;
   last_name: string | null;
   group_name: string | null;
+  total_points?: number;
+  total_som?: number;
 }
 
 export interface StudentProfileUpdate {
@@ -81,6 +83,54 @@ export interface SkillMap {
   skills: StudentSkill[];
 }
 
+// Детальная информация о студенте (для просмотра профиля другого студента)
+export interface StudentDetail extends SkillMap {}
+
+// Student Rating
+export interface RatingStudent {
+  rank: number;
+  id: number;
+  user_id: number;
+  email: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  group_name: string | null;
+  total_points: number;
+  total_som: number;
+}
+
+export interface RatingResponse {
+  students: RatingStudent[];
+  pagination: {
+    page: number;
+    per_page: number;
+    total: number;
+    pages: number;
+  };
+}
+
+// Recommendations
+export interface StudentRecommendation {
+  student_id: number;
+  user_id: number;
+  email: string;
+  first_name: string | null;
+  last_name: string | null;
+  group_name: string | null;
+  common_interests_count?: number;
+  common_interests?: string[];
+  roles_count?: number;
+  roles?: Role[];
+  match_type: "interests" | "roles";
+}
+
+export interface RecommendationsResponse {
+  recommendations_by_interests: StudentRecommendation[];
+  recommendations_by_interests_pagination: Pagination;
+  recommendations_by_roles: StudentRecommendation[];
+  recommendations_by_roles_pagination: Pagination;
+}
+
 // Admin Profile
 export interface AdminProfile {
   id: number;
@@ -93,6 +143,106 @@ export interface AdminProfile {
 export interface AdminProfileUpdate {
   full_name?: string;
   position?: string;
+}
+
+// Admin - Student Management
+export interface AdminStudentItem {
+  id: number | null;
+  user_id: number;
+  email: string;
+  first_name: string | null;
+  last_name: string | null;
+  group_name: string | null;
+  created_at: string | null;
+  skills_count: number;
+  interests_count: number;
+  roles_count: number;
+  total_points: number;
+  total_som: number;
+}
+
+export interface AdminStudentsResponse {
+  students: AdminStudentItem[];
+  pagination: Pagination;
+}
+
+export interface AdminStudentsFilters {
+  page?: number;
+  per_page?: number;
+  search?: string;
+  group?: string;
+  has_profile?: boolean;
+  has_skills?: boolean;
+  skill_id?: number;
+  role_id?: number;
+  interest_id?: number;
+  sort_by?: 'email' | 'first_name' | 'last_name' | 'group_name' | 'created_at' | 'total_points' | 'total_som';
+  sort_order?: 'asc' | 'desc';
+}
+
+// Admin - Filter Options
+export interface FilterSkillCategory {
+  category: { id: number; name: string };
+  skills: { id: number; name: string }[];
+}
+
+export interface FilterRole {
+  id: number;
+  code: string;
+  name: string;
+}
+
+export interface FilterInterest {
+  id: number;
+  name: string;
+}
+
+// Points System
+export interface PointCategory {
+  id: number;
+  name: string;
+  points: number;
+  is_penalty: boolean;
+  is_custom: boolean;
+}
+
+export interface PointTransaction {
+  id: number;
+  points: number;
+  som_earned: number;
+  description: string;
+  category: {
+    id: number;
+    name: string;
+    is_penalty: boolean;
+  } | null;
+  created_by: {
+    id: number;
+    email: string;
+  } | null;
+  created_at: string;
+}
+
+export interface AddPointsRequest {
+  category_id: number;
+  points?: number;  // только для кастомной категории
+  description?: string;
+}
+
+export interface AddPointsResponse {
+  message: string;
+  transaction: {
+    id: number;
+    points: number;
+    som_earned: number;
+    description: string;
+    created_at: string;
+  };
+  student: {
+    id: number;
+    total_points: number;
+    total_som: number;
+  };
 }
 
 // Forum

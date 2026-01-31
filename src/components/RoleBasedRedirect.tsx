@@ -15,7 +15,7 @@ export function RoleBasedRedirect() {
     case "admin":
       return <Navigate to="/admin" replace />;
     case "student":
-      return <Navigate to="/profile" replace />;
+      return <Navigate to="/home" replace />;
     default:
       return <Navigate to="/login" replace />;
   }
