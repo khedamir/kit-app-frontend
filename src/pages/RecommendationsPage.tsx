@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { Loader2, Users, Sparkles, Briefcase, Mail, GraduationCap, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Loader2, Users, Sparkles, Briefcase, Mail, GraduationCap, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRecommendations } from "@/hooks/useStudent";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { BackButton } from "@/components/ui/back-button";
 import { StudentDetailDialog } from "@/components/students/StudentDetailDialog";
 import type { StudentRecommendation } from "@/types";
 
@@ -241,6 +242,7 @@ export function RecommendationsPage() {
   if (byInterests.length === 0 && byRoles.length === 0) {
     return (
       <div className="max-w-4xl mx-auto space-y-6">
+        <BackButton to="/profile" label="Назад в профиль" />
         <div>
           <h1 className="text-3xl font-bold mb-2">Рекомендации студентов</h1>
           <p className="text-muted-foreground">
@@ -270,6 +272,7 @@ export function RecommendationsPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      <BackButton to="/profile" label="Назад в профиль" />
       <div>
         <h1 className="text-3xl font-bold mb-2">Рекомендации студентов</h1>
         <p className="text-muted-foreground">

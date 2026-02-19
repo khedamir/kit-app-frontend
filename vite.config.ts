@@ -17,13 +17,51 @@ export default defineConfig({
     minify: "esbuild",
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ["react", "react-dom", "react-router-dom"],
-          query: ["@tanstack/react-query"],
-          ui: ["lucide-react"],
+        manualChunks: (id) => {
+          // Vendor libraries
+          if (id.includes("node_modules")) {
+            // React core
+            if (id.includes("react") && !id.includes("react-dom")) {
+              return "react-core";
+            }
+            if (id.includes("react-dom")) {
+              return "react-dom";
+            }
+            // Router
+            if (id.includes("react-router")) {
+              return "router";
+            }
+            // React Query
+            if (id.includes("@tanstack/react-query")) {
+              return "query";
+            }
+            // State management
+            if (id.includes("zustand")) {
+              return "zustand";
+            }
+            // HTTP client
+            if (id.includes("axios")) {
+              return "axios";
+            }
+            // Icons
+            if (id.includes("lucide-react")) {
+              return "icons";
+            }
+            // Emoji libraries
+            if (id.includes("emoji-mart") || id.includes("@emoji-mart")) {
+              return "emoji";
+            }
+            // UI utilities
+            if (id.includes("class-variance-authority") || id.includes("clsx") || id.includes("tailwind-merge")) {
+              return "ui-utils";
+            }
+            // Other vendor code
+            return "vendor";
+          }
         },
       },
     },
+    chunkSizeWarningLimit: 600,
   },
   server: {
     port: 5173,

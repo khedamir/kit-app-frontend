@@ -1,9 +1,11 @@
 import { ShoppingBag, Wrench } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { BackButton } from "@/components/ui/back-button";
 
 export function ShopPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      <BackButton to="/profile" label="Назад в профиль" />
       <div>
         <h1 className="text-3xl font-bold mb-2">Магазин</h1>
         <p className="text-muted-foreground">

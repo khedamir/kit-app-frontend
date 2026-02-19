@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -6,18 +6,31 @@ import { useAuthStore } from "@/store/auth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { RoleBasedRedirect } from "@/components/RoleBasedRedirect";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ToastProvider } from "@/components/ui/toast";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { LoginPage } from "@/pages/LoginPage";
-import { RegisterPage } from "@/pages/RegisterPage";
-import { ProfilePage } from "@/pages/ProfilePage";
-import { RecommendationsPage } from "@/pages/RecommendationsPage";
-import { ShopPage } from "@/pages/ShopPage";
-import { HomePage } from "@/pages/HomePage";
-import { StudentsManagementPage } from "@/pages/admin/StudentsManagementPage";
-import { AdminDashboard } from "@/pages/admin/AdminDashboard";
-import { ForumPage } from "@/pages/ForumPage";
-import { TopicPage } from "@/pages/TopicPage";
-import { RatingPage } from "@/pages/RatingPage";
+
+// Lazy load pages for code splitting
+const LoginPage = lazy(() => import("@/pages/LoginPage").then(m => ({ default: m.LoginPage })));
+const RegisterPage = lazy(() => import("@/pages/RegisterPage").then(m => ({ default: m.RegisterPage })));
+const ProfilePage = lazy(() => import("@/pages/ProfilePage").then(m => ({ default: m.ProfilePage })));
+const RecommendationsPage = lazy(() => import("@/pages/RecommendationsPage").then(m => ({ default: m.RecommendationsPage })));
+const ShopPage = lazy(() => import("@/pages/ShopPage").then(m => ({ default: m.ShopPage })));
+const HomePage = lazy(() => import("@/pages/HomePage").then(m => ({ default: m.HomePage })));
+const StudentsManagementPage = lazy(() => import("@/pages/admin/StudentsManagementPage").then(m => ({ default: m.StudentsManagementPage })));
+const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
+const ReferenceManagementPage = lazy(() => import("@/pages/admin/ReferenceManagementPage").then(m => ({ default: m.ReferenceManagementPage })));
+const ForumPage = lazy(() => import("@/pages/ForumPage").then(m => ({ default: m.ForumPage })));
+const TopicPage = lazy(() => import("@/pages/TopicPage").then(m => ({ default: m.TopicPage })));
+const RatingPage = lazy(() => import("@/pages/RatingPage").then(m => ({ default: m.RatingPage })));
+
+// Loading fallback component
+function PageLoader() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -109,6 +122,7 @@ function AppRoutes() {
       >
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/students" element={<StudentsManagementPage />} />
+        <Route path="/admin/reference" element={<ReferenceManagementPage />} />
       </Route>
 
       {/* Common Routes (for all authenticated users) */}
@@ -155,9 +169,13 @@ export default function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter basename={basename}>
-          <AppRoutes />
-        </BrowserRouter>
+        <ToastProvider>
+          <BrowserRouter basename={basename}>
+            <Suspense fallback={<PageLoader />}>
+              <AppRoutes />
+            </Suspense>
+          </BrowserRouter>
+        </ToastProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );

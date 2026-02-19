@@ -77,5 +77,72 @@ export const adminApi = {
     );
     return data;
   },
+
+  // Reference data (skills, interests, roles)
+  getReferenceSkillCategories: async (): Promise<{ id: number; name: string }[]> => {
+    const { data } = await apiClient.get<{ id: number; name: string }[]>("/admins/reference/skill-categories");
+    return data;
+  },
+
+  createSkillCategory: async (name: string): Promise<{ id: number; name: string }> => {
+    const { data } = await apiClient.post<{ id: number; name: string }>("/admins/reference/skill-categories", { name });
+    return data;
+  },
+
+  deleteSkillCategory: async (categoryId: number): Promise<void> => {
+    await apiClient.delete(`/admins/reference/skill-categories/${categoryId}`);
+  },
+
+  getReferenceSkills: async (categoryId?: number): Promise<{ id: number; name: string; category: { id: number; name: string } }[]> => {
+    const params = categoryId ? { category_id: categoryId } : {};
+    const { data } = await apiClient.get<{ id: number; name: string; category: { id: number; name: string } }[]>(
+      "/admins/reference/skills",
+      { params }
+    );
+    return data;
+  },
+
+  createSkill: async (name: string, categoryId: number): Promise<{ id: number; name: string; category: { id: number; name: string } }> => {
+    const { data } = await apiClient.post<{ id: number; name: string; category: { id: number; name: string } }>(
+      "/admins/reference/skills",
+      { name, category_id: categoryId }
+    );
+    return data;
+  },
+
+  deleteSkill: async (skillId: number): Promise<void> => {
+    await apiClient.delete(`/admins/reference/skills/${skillId}`);
+  },
+
+  getReferenceInterests: async (): Promise<{ id: number; name: string }[]> => {
+    const { data } = await apiClient.get<{ id: number; name: string }[]>("/admins/reference/interests");
+    return data;
+  },
+
+  createInterest: async (name: string): Promise<{ id: number; name: string }> => {
+    const { data } = await apiClient.post<{ id: number; name: string }>("/admins/reference/interests", { name });
+    return data;
+  },
+
+  deleteInterest: async (interestId: number): Promise<void> => {
+    await apiClient.delete(`/admins/reference/interests/${interestId}`);
+  },
+
+  getReferenceRoles: async (): Promise<{ id: number; code: string; name: string }[]> => {
+    const { data } = await apiClient.get<{ id: number; code: string; name: string }[]>("/admins/reference/roles");
+    return data;
+  },
+
+  createRole: async (code: string, name: string): Promise<{ id: number; code: string; name: string }> => {
+    const { data } = await apiClient.post<{ id: number; code: string; name: string }>("/admins/reference/roles", {
+      code,
+      name,
+    });
+    return data;
+  },
+
+  deleteRole: async (roleId: number): Promise<void> => {
+    await apiClient.delete(`/admins/reference/roles/${roleId}`);
+  },
 };
 

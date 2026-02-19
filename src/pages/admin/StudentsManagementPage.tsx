@@ -30,6 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Select } from "@/components/ui/select";
+import { BackButton } from "@/components/ui/back-button";
 import { StudentDetailDialog } from "@/components/students/StudentDetailDialog";
 import { ChangePointsDialog } from "@/components/admin/ChangePointsDialog";
 import type { AdminStudentsFilters, AdminStudentItem } from "@/types";
@@ -255,6 +256,7 @@ export function StudentsManagementPage() {
 
   return (
     <div className="space-y-6">
+      <BackButton to="/admin" label="Назад в панель" />
       <div>
         <h1 className="text-3xl font-bold mb-2">Управление студентами</h1>
         <p className="text-muted-foreground">

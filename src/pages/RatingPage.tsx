@@ -14,6 +14,7 @@ import { useRating, useSkillMap } from "@/hooks/useStudent";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { BackButton } from "@/components/ui/back-button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { RatingStudent } from "@/types";
@@ -48,6 +49,7 @@ export function RatingPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      <BackButton to="/profile" label="Назад в профиль" />
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold flex items-center gap-2">

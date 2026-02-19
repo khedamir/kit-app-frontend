@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { usePointCategories, useAddStudentPoints } from "@/hooks/useAdmin";
+import { getApiErrorMessage } from "@/lib/error-handler";
 import type { AdminStudentItem } from "@/types";
 
 interface ChangePointsDialogProps {
@@ -146,8 +147,8 @@ export function ChangePointsDialog({
 
       onOpenChange(false);
       onSuccess?.();
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Ошибка при изменении баллов");
+    } catch (err) {
+      setError(getApiErrorMessage(err, "Ошибка при изменении баллов"));
     }
   };
 
