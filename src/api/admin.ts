@@ -43,6 +43,10 @@ export const adminApi = {
     return data;
   },
 
+  deleteStudent: async (userId: number): Promise<void> => {
+    await apiClient.delete(`/admins/students/${userId}`);
+  },
+
   getStudentGroups: async (): Promise<{ groups: string[] }> => {
     const { data } = await apiClient.get<{ groups: string[] }>("/admins/students/groups");
     return data;

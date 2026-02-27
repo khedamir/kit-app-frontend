@@ -14,6 +14,7 @@ interface AuthState {
   logout: () => void
   checkAuth: () => Promise<void>
   setUser: (user: User | null) => void
+  deleteAccountLocally: () => void
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -82,6 +83,16 @@ export const useAuthStore = create<AuthState>()(
 
       setUser: (user) => {
         set({ user, isAuthenticated: !!user })
+      },
+
+      deleteAccountLocally: () => {
+        localStorage.removeItem('access_token')
+        localStorage.removeItem('refresh_token')
+        set({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+        })
       },
     }),
     {

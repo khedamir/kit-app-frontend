@@ -81,6 +81,17 @@ export function usePointCategories() {
   });
 }
 
+export function useDeleteStudent() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (userId: number) => adminApi.deleteStudent(userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.students() });
+    },
+  });
+}
+
 export function useAddStudentPoints() {
   const queryClient = useQueryClient();
 

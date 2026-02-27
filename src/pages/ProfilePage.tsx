@@ -15,7 +15,7 @@ import {
   PenLine,
   Trophy,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSkillMap, useUpdateProfile } from "@/hooks/useStudent";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,10 +24,17 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { QuestionnaireModal } from "@/components/QuestionnaireModal";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useToast } from "@/components/ui/toast";
+import { studentApi } from "@/api/student";
+import { useAuthStore } from "@/store/auth";
 
 export function ProfilePage() {
   const { data: skillMap, isLoading, error } = useSkillMap();
   const updateProfile = useUpdateProfile();
+  const navigate = useNavigate();
+  const { showSuccess } = useToast();
+  const deleteAccountLocally = useAuthStore((state) => state.deleteAccountLocally);
 
   const [isEditing, setIsEditing] = useState(false);
   const [isQuestionnaireOpen, setIsQuestionnaireOpen] = useState(false);
@@ -37,6 +44,8 @@ export function ProfilePage() {
     last_name: "",
     group_name: "",
   });
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   if (isLoading) {
     return (
@@ -88,6 +97,20 @@ export function ProfilePage() {
 
   const handleCancel = () => {
     setIsEditing(false);
+  };
+
+  const handleConfirmDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      await studentApi.deleteMyAccount();
+      deleteAccountLocally();
+      showSuccess("Аккаунт успешно удалён");
+      navigate("/login", { replace: true });
+    } catch {
+      // Если нужно, можно вывести отдельное сообщение об ошибке
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   // Группируем навыки по категориям
@@ -398,6 +421,34 @@ export function ProfilePage() {
         currentRoles={roles}
         currentInterests={interests}
         currentSkills={skills}
+      />
+
+      {/* Delete Account Section */}
+      <div className="pt-4 border-t border-border/40 space-y-3">
+        <p className="text-xs text-muted-foreground max-w-2xl">
+          Удаление аккаунта необратимо. Ваш профиль, анкета и баллы будут удалены.
+          Темы и сообщения на форуме останутся с пометкой «Удаленный аккаунт».
+        </p>
+        <Button
+          variant="outline"
+          className="border-destructive/50 text-destructive hover:bg-destructive/10 w-full sm:w-auto"
+          onClick={() => setIsDeleteDialogOpen(true)}
+        >
+          Удалить аккаунт
+        </Button>
+      </div>
+
+      {/* Delete Account Dialog */}
+      <ConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        title="Удалить аккаунт?"
+        description="Ваш профиль, анкета и баллы будут удалены. Темы и сообщения на форуме останутся с пометкой «Удаленный аккаунт». Это действие нельзя отменить."
+        confirmLabel="Удалить аккаунт"
+        cancelLabel="Отмена"
+        variant="destructive"
+        onConfirm={handleConfirmDeleteAccount}
+        isLoading={isDeleting}
       />
     </div>
   );

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { getApiErrorMessage } from '@/lib/error-handler'
 
 export function RegisterPage() {
   const register = useAuthStore((state) => state.register)
@@ -30,11 +31,8 @@ export function RegisterPage() {
       await register(email, password)
       // Редирект произойдёт автоматически через RoleBasedRedirect в App.tsx
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message || 'Не удалось зарегистрироваться')
-      } else {
-        setError('Не удалось зарегистрироваться')
-      }
+      const message = getApiErrorMessage(err, 'Не удалось зарегистрироваться')
+      setError(message)
     } finally {
       setIsLoading(false)
     }

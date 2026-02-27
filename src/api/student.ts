@@ -78,4 +78,9 @@ export const studentApi = {
     });
     return data;
   },
+
+  // Self-delete account
+  deleteMyAccount: async (): Promise<void> => {
+    await apiClient.delete("/students/me");
+  },
 };

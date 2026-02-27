@@ -23,6 +23,7 @@ import {
   useFilterSkills,
   useFilterRoles,
   useFilterInterests,
+  useDeleteStudent,
 } from "@/hooks/useAdmin";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,18 +32,23 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Select } from "@/components/ui/select";
 import { BackButton } from "@/components/ui/back-button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { getApiErrorMessage } from "@/lib/error-handler";
 import { StudentDetailDialog } from "@/components/students/StudentDetailDialog";
 import { ChangePointsDialog } from "@/components/admin/ChangePointsDialog";
+import { useToast } from "@/components/ui/toast";
 import type { AdminStudentsFilters, AdminStudentItem } from "@/types";
 
 function StudentRow({
   student,
   onSelect,
   onChangePoints,
+  onDelete,
 }: {
   student: AdminStudentItem;
   onSelect: (id: number) => void;
   onChangePoints: (student: AdminStudentItem) => void;
+  onDelete: (student: AdminStudentItem) => void;
 }) {
   const fullName =
     student.first_name && student.last_name
@@ -139,18 +145,30 @@ function StudentRow({
       </div>
 
       {/* Кнопка изменения баллов */}
-      <Button
-        variant="ghost"
-        size="sm"
-        className="flex-shrink-0"
-        onClick={(e) => {
-          e.stopPropagation();
-          onChangePoints(student);
-        }}
-      >
-        <Edit3 className="h-4 w-4 mr-1" />
-        <span className="hidden sm:inline">Баллы</span>
-      </Button>
+      <div className="flex items-center gap-1 flex-shrink-0">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            onChangePoints(student);
+          }}
+        >
+          <Edit3 className="h-4 w-4 mr-1" />
+          <span className="hidden sm:inline">Баллы</span>
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-destructive hover:text-destructive"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(student);
+          }}
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
 }
@@ -166,6 +184,9 @@ export function StudentsManagementPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState<number | null>(null);
   const [selectedStudentForPoints, setSelectedStudentForPoints] = useState<AdminStudentItem | null>(null);
+  const [studentToDelete, setStudentToDelete] = useState<AdminStudentItem | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const { showSuccess } = useToast();
 
   const { data, isLoading, error, refetch } = useAdminStudents(filters);
   const { data: groupsData } = useStudentGroups();
@@ -253,6 +274,21 @@ export function StudentsManagementPage() {
     filters.skill_id !== undefined ||
     filters.role_id !== undefined ||
     filters.interest_id !== undefined;
+
+  const deleteStudent = useDeleteStudent();
+
+  const handleConfirmDelete = async () => {
+    if (!studentToDelete) return;
+    setDeleteError(null);
+    try {
+      await deleteStudent.mutateAsync(studentToDelete.user_id);
+      setStudentToDelete(null);
+      refetch();
+      showSuccess("Студент успешно удалён");
+    } catch (err) {
+      setDeleteError(getApiErrorMessage(err, "Не удалось удалить студента"));
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -524,6 +560,7 @@ export function StudentsManagementPage() {
                   student={student}
                   onSelect={setSelectedStudentId}
                   onChangePoints={setSelectedStudentForPoints}
+                onDelete={setStudentToDelete}
                 />
               ))}
             </CardContent>
@@ -582,6 +619,35 @@ export function StudentsManagementPage() {
         }}
         onSuccess={() => refetch()}
       />
+
+      {/* Delete Student Dialog */}
+      <ConfirmDialog
+        open={studentToDelete !== null}
+        onOpenChange={(open) => {
+          if (!open && !deleteStudent.isPending) {
+            setStudentToDelete(null);
+            setDeleteError(null);
+          }
+        }}
+        title="Удалить студента"
+        description={
+          studentToDelete
+            ? `Вы точно хотите удалить студента ${
+                studentToDelete.first_name && studentToDelete.last_name
+                  ? `${studentToDelete.first_name} ${studentToDelete.last_name}`
+                  : studentToDelete.email
+              }? Это действие невозможно отменить.`
+            : "Вы точно хотите удалить этого студента? Это действие невозможно отменить."
+        }
+        confirmLabel="Удалить"
+        cancelLabel="Отмена"
+        variant="destructive"
+        onConfirm={handleConfirmDelete}
+        isLoading={deleteStudent.isPending}
+      />
+      {deleteError && (
+        <p className="text-sm text-destructive mt-2">{deleteError}</p>
+      )}
     </div>
   );
 }
