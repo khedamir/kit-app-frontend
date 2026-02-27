@@ -18,6 +18,22 @@ export const authApi = {
     return data;
   },
 
+  registerAdmin: async (payload: {
+    email: string;
+    password: string;
+    full_name?: string;
+    position?: string;
+  }): Promise<AuthResponse> => {
+    const { email, password, full_name, position } = payload;
+    const { data } = await apiClient.post<AuthResponse>("/auth/register-admin", {
+      email,
+      password,
+      full_name,
+      position,
+    });
+    return data;
+  },
+
   refresh: async (): Promise<{ access_token: string }> => {
     const { data } = await apiClient.post<{ access_token: string }>(
       "/auth/refresh"

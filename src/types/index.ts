@@ -145,6 +145,15 @@ export interface AdminProfileUpdate {
   position?: string;
 }
 
+export interface AdminUserItem {
+  id: number;
+  email: string;
+  full_name: string | null;
+  position: string | null;
+  is_active: boolean;
+  created_at: string | null;
+}
+
 // Admin - Student Management
 export interface AdminStudentItem {
   id: number | null;

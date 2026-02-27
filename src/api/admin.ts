@@ -10,6 +10,7 @@ import type {
   PointCategory,
   AddPointsRequest,
   AddPointsResponse,
+  AdminUserItem,
 } from "@/types";
 
 export const adminApi = {
@@ -45,6 +46,16 @@ export const adminApi = {
 
   deleteStudent: async (userId: number): Promise<void> => {
     await apiClient.delete(`/admins/students/${userId}`);
+  },
+
+  // Admin users management
+  getAdminUsers: async (): Promise<AdminUserItem[]> => {
+    const { data } = await apiClient.get<AdminUserItem[]>("/admins/users");
+    return data;
+  },
+
+  deleteAdminUser: async (userId: number): Promise<void> => {
+    await apiClient.delete(`/admins/users/${userId}`);
   },
 
   getStudentGroups: async (): Promise<{ groups: string[] }> => {

@@ -1,6 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { adminApi } from "@/api/admin";
-import type { AdminProfileUpdate, AdminStudentsFilters, AddPointsRequest } from "@/types";
+import { authApi } from "@/api";
+import type {
+  AdminProfileUpdate,
+  AdminStudentsFilters,
+  AddPointsRequest,
+  AdminUserItem,
+} from "@/types";
 
 export const adminKeys = {
   all: ["admin"] as const,
@@ -16,6 +22,7 @@ export const adminKeys = {
   referenceSkills: (categoryId?: number) => [...adminKeys.all, "reference", "skills", categoryId] as const,
   referenceInterests: () => [...adminKeys.all, "reference", "interests"] as const,
   referenceRoles: () => [...adminKeys.all, "reference", "roles"] as const,
+  adminUsers: () => [...adminKeys.all, "admin-users"] as const,
 };
 
 export function useAdminProfile() {
@@ -78,6 +85,39 @@ export function usePointCategories() {
   return useQuery({
     queryKey: adminKeys.pointCategories(),
     queryFn: adminApi.getPointCategories,
+  });
+}
+
+// Admin users management
+export function useAdminUsers() {
+  return useQuery<AdminUserItem[]>({
+    queryKey: adminKeys.adminUsers(),
+    queryFn: adminApi.getAdminUsers,
+  });
+}
+
+export function useCreateAdminUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: {
+      email: string;
+      password: string;
+      full_name?: string;
+      position?: string;
+    }) => authApi.registerAdmin(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.adminUsers() });
+    },
+  });
+}
+
+export function useDeleteAdminUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (userId: number) => adminApi.deleteAdminUser(userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.adminUsers() });
+    },
   });
 }
 
