@@ -142,6 +142,9 @@ export function AdminDashboard() {
     }
   };
 
+  const isPrimaryAdmin =
+    adminUsers && adminUsers.length > 0 && adminUsers[0].id === profile.user_id;
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Profile Card */}
@@ -289,8 +292,9 @@ export function AdminDashboard() {
         </Link>
       </div>
 
-      {/* Admin Users Management */}
-      <Card>
+      {/* Admin Users Management (only for primary admin) */}
+      {isPrimaryAdmin && (
+        <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <Shield className="h-5 w-5 text-primary" />
@@ -468,30 +472,33 @@ export function AdminDashboard() {
           )}
         </CardContent>
       </Card>
+      )}
 
       {/* Delete admin dialog */}
-      <ConfirmDialog
-        open={adminToDelete !== null}
-        onOpenChange={(open) => {
-          if (!open && !deleteAdminUser.isPending) {
-            setAdminToDelete(null);
-            setDeleteAdminError(null);
+      {isPrimaryAdmin && (
+        <ConfirmDialog
+          open={adminToDelete !== null}
+          onOpenChange={(open) => {
+            if (!open && !deleteAdminUser.isPending) {
+              setAdminToDelete(null);
+              setDeleteAdminError(null);
+            }
+          }}
+          title="Удалить администратора?"
+          description={
+            adminToDelete
+              ? `Вы точно хотите удалить администратора ${
+                  adminToDelete.full_name || adminToDelete.email
+                }? Его аккаунт будет деактивирован.`
+              : "Вы точно хотите удалить этого администратора? Его аккаунт будет деактивирован."
           }
-        }}
-        title="Удалить администратора?"
-        description={
-          adminToDelete
-            ? `Вы точно хотите удалить администратора ${
-                adminToDelete.full_name || adminToDelete.email
-              }? Его аккаунт будет деактивирован.`
-            : "Вы точно хотите удалить этого администратора? Его аккаунт будет деактивирован."
-        }
-        confirmLabel="Удалить администратора"
-        cancelLabel="Отмена"
-        variant="destructive"
-        onConfirm={handleConfirmDeleteAdmin}
-        isLoading={deleteAdminUser.isPending}
-      />
+          confirmLabel="Удалить администратора"
+          cancelLabel="Отмена"
+          variant="destructive"
+          onConfirm={handleConfirmDeleteAdmin}
+          isLoading={deleteAdminUser.isPending}
+        />
+      )}
     </div>
   );
 }
