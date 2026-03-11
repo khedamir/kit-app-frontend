@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { LogOut, GraduationCap, Bell } from "lucide-react";
+import { LogOut, GraduationCap, Bell, Sun, Moon } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
+import { useThemeStore } from "@/store/theme";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -17,6 +18,7 @@ import { DesktopNav } from "./Navigation";
 export function Header() {
   const { user, logout } = useAuthStore();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+   const { theme, toggleTheme } = useThemeStore();
 
   const initials = user?.email
     ? user.email.substring(0, 2).toUpperCase()
@@ -46,6 +48,20 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-1 sm:gap-3">
+            {/* Theme toggle */}
+            <Button
+              variant="ghost"
+              size="icon"
+              title={theme === "light" ? "Включить тёмную тему" : "Включить светлую тему"}
+              onClick={toggleTheme}
+            >
+              {theme === "light" ? (
+                <Moon className="h-4 w-4" />
+              ) : (
+                <Sun className="h-4 w-4" />
+              )}
+            </Button>
+
             {/* Notifications */}
             <Button
               variant="ghost"

@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { useAuthStore } from "@/store/auth";
+import { useThemeStore } from "@/store/theme";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { RoleBasedRedirect } from "@/components/RoleBasedRedirect";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -165,6 +166,23 @@ function AppRoutes() {
 export default function App() {
   // Определяем base path для React Router (если приложение развёрнуто в поддиректории)
   const basename = import.meta.env.BASE_URL || "/";
+  const theme = useThemeStore((state) => state.theme);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === "light") {
+      root.setAttribute("data-theme", "light");
+    } else {
+      root.removeAttribute("data-theme");
+    }
+
+    const metaTheme = document.querySelector<HTMLMetaElement>(
+      'meta[name="theme-color"]'
+    );
+    if (metaTheme) {
+      metaTheme.content = theme === "light" ? "#fafafa" : "#0a0a0b";
+    }
+  }, [theme]);
 
   return (
     <ErrorBoundary>
