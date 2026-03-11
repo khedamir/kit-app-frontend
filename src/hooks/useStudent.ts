@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { studentApi } from '@/api'
 import type { StudentProfileUpdate, SkillInput } from '@/types'
+import { useAuthStore } from '@/store/auth'
 
 export const studentKeys = {
   all: ['student'] as const,
@@ -11,15 +12,19 @@ export const studentKeys = {
 }
 
 export function useStudentProfile() {
+  const userId = useAuthStore((state) => state.user?.id)
+
   return useQuery({
-    queryKey: studentKeys.profile(),
+    queryKey: [...studentKeys.profile(), userId],
     queryFn: studentApi.getProfile,
   })
 }
 
 export function useSkillMap() {
+  const userId = useAuthStore((state) => state.user?.id)
+
   return useQuery({
-    queryKey: studentKeys.skillMap(),
+    queryKey: [...studentKeys.skillMap(), userId],
     queryFn: studentApi.getSkillMap,
   })
 }

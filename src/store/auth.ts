@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { User } from '@/types'
+import type { User, RegisterCredentials } from '@/types'
 import { authApi } from '@/api'
 
 interface AuthState {
@@ -10,7 +10,7 @@ interface AuthState {
   
   // Actions
   login: (email: string, password: string) => Promise<void>
-  register: (email: string, password: string) => Promise<void>
+  register: (payload: RegisterCredentials) => Promise<void>
   logout: () => void
   checkAuth: () => Promise<void>
   setUser: (user: User | null) => void
@@ -37,8 +37,8 @@ export const useAuthStore = create<AuthState>()(
         })
       },
 
-      register: async (email: string, password: string) => {
-        const response = await authApi.register({ email, password })
+      register: async (payload: RegisterCredentials) => {
+        const response = await authApi.register(payload)
 
         if (response.user.role !== 'student') {
           throw new Error('Регистрация доступна только для студентов')

@@ -12,6 +12,11 @@ export function RegisterPage() {
   const register = useAuthStore((state) => state.register)
 
   const [email, setEmail] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [middleName, setMiddleName] = useState('')
+  const [groupCode, setGroupCode] = useState('')
+  const [birthday, setBirthday] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
@@ -26,9 +31,22 @@ export function RegisterPage() {
       return
     }
 
+    if (!lastName || !firstName || !groupCode) {
+      setError('Укажите фамилию, имя и группу для подтверждения в журнале')
+      return
+    }
+
     setIsLoading(true)
     try {
-      await register(email, password)
+      await register({
+        email,
+        password,
+        last_name: lastName,
+        first_name: firstName,
+        middle_name: middleName || undefined,
+        group_code: groupCode,
+        birthday: birthday || undefined,
+      })
       // Редирект произойдёт автоматически через RoleBasedRedirect в App.tsx
     } catch (err) {
       const message = getApiErrorMessage(err, 'Не удалось зарегистрироваться')
@@ -62,13 +80,72 @@ export function RegisterPage() {
           <div>
             <CardTitle className="text-2xl font-bold">Регистрация студента</CardTitle>
             <CardDescription className="mt-2">
-              Создайте аккаунт студента по email
+              Аккаунт будет создан только для студентов из сетевого журнала
             </CardDescription>
           </div>
         </CardHeader>
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">Фамилия</Label>
+                  <Input
+                    id="lastName"
+                    placeholder="Иванов"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    required
+                    className="bg-background/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">Имя</Label>
+                  <Input
+                    id="firstName"
+                    placeholder="Иван"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                    className="bg-background/50"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="middleName">Отчество (опционально)</Label>
+                  <Input
+                    id="middleName"
+                    placeholder="Иванович"
+                    value={middleName}
+                    onChange={(e) => setMiddleName(e.target.value)}
+                    className="bg-background/50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="groupCode">Группа</Label>
+                  <Input
+                    id="groupCode"
+                    placeholder="ИС-21"
+                    value={groupCode}
+                    onChange={(e) => setGroupCode(e.target.value)}
+                    required
+                    className="bg-background/50"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="birthday">Дата рождения (опционально)</Label>
+                <Input
+                  id="birthday"
+                  type="date"
+                  value={birthday}
+                  onChange={(e) => setBirthday(e.target.value)}
+                  className="bg-background/50"
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input

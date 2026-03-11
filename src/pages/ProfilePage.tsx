@@ -43,6 +43,8 @@ export function ProfilePage() {
     first_name: "",
     last_name: "",
     group_name: "",
+    middle_name: "",
+    birthday: "",
   });
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -72,7 +74,7 @@ export function ProfilePage() {
 
   const fullName =
     profile.first_name && profile.last_name
-      ? `${profile.first_name} ${profile.last_name}`
+      ? `${profile.first_name} ${profile.middle_name ? profile.middle_name + " " : ""}${profile.last_name}`
       : "Не указано";
 
   const handleEdit = () => {
@@ -81,6 +83,8 @@ export function ProfilePage() {
       first_name: profile.first_name || "",
       last_name: profile.last_name || "",
       group_name: profile.group_name || "",
+      middle_name: profile.middle_name || "",
+      birthday: profile.birthday || "",
     });
     setIsEditing(true);
   };
@@ -135,7 +139,7 @@ export function ProfilePage() {
 
           <div className="pt-14 sm:pt-0 sm:pl-32">
             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-              <div>
+              <div className="space-y-2">
                 {isEditing ? (
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -168,18 +172,48 @@ export function ProfilePage() {
                         />
                       </div>
                     </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="group_name">Группа</Label>
+                        <Input
+                          id="group_name"
+                          value={formData.group_name}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              group_name: e.target.value,
+                            }))
+                          }
+                          placeholder="Например: ИС-11"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="middle_name">Отчество (как в журнале)</Label>
+                        <Input
+                          id="middle_name"
+                          value={formData.middle_name}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              middle_name: e.target.value,
+                            }))
+                          }
+                          placeholder="Например: Сергеевич"
+                        />
+                      </div>
+                    </div>
                     <div className="space-y-2">
-                      <Label htmlFor="group_name">Группа</Label>
+                      <Label htmlFor="birthday">Дата рождения (для точного совпадения)</Label>
                       <Input
-                        id="group_name"
-                        value={formData.group_name}
+                        id="birthday"
+                        type="date"
+                        value={formData.birthday}
                         onChange={(e) =>
                           setFormData((prev) => ({
                             ...prev,
-                            group_name: e.target.value,
+                            birthday: e.target.value,
                           }))
                         }
-                        placeholder="Например: ИС-11"
                       />
                     </div>
                     {saveError && (
@@ -213,6 +247,17 @@ export function ProfilePage() {
                         {profile.group_name}
                       </Badge>
                     )}
+                    <div className="mt-2">
+                      {profile.is_verified ? (
+                        <Badge variant="outline" className="border-green-500 text-green-600">
+                          Аккаунт подтверждён
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="border-amber-500 text-amber-600">
+                          Аккаунт не подтверждён
+                        </Badge>
+                      )}
+                    </div>
                   </>
                 )}
               </div>

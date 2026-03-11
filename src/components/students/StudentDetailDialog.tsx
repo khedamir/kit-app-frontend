@@ -1,4 +1,4 @@
-import { Loader2, Mail, GraduationCap } from "lucide-react";
+import { Loader2, Mail, GraduationCap, CheckCircle2, AlertCircle, CalendarDays } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +22,7 @@ export function StudentDetailDialog({
   const profile = studentData?.profile;
   const fullName =
     profile?.first_name && profile?.last_name
-      ? `${profile.first_name} ${profile.last_name}`
+      ? `${profile.first_name}${profile.middle_name ? " " + profile.middle_name : ""} ${profile.last_name}`
       : profile?.email.split("@")[0] || "";
 
   const initials = fullName
@@ -60,13 +60,28 @@ export function StudentDetailDialog({
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <h2 className="text-2xl font-bold mb-1">{fullName}</h2>
-                {profile?.group_name && (
-                  <p className="text-sm text-muted-foreground flex items-center gap-1.5 mb-2">
-                    <GraduationCap className="h-4 w-4" />
-                    {profile.group_name}
-                  </p>
-                )}
+                <h2 className="text-2xl font-bold mb-1 flex items-center gap-2">
+                  {profile?.is_verified ? (
+                    <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0" />
+                  ) : (
+                    <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+                  )}
+                  <span>{fullName}</span>
+                </h2>
+                <div className="flex flex-wrap gap-3 mb-2 text-sm text-muted-foreground">
+                  {profile?.group_name && (
+                    <p className="flex items-center gap-1.5">
+                      <GraduationCap className="h-4 w-4" />
+                      {profile.group_name}
+                    </p>
+                  )}
+                  {profile?.birthday && (
+                    <p className="flex items-center gap-1.5">
+                      <CalendarDays className="h-4 w-4" />
+                      {new Date(profile.birthday).toLocaleDateString("ru-RU")}
+                    </p>
+                  )}
+                </div>
                 <a
                   href={`mailto:${profile?.email}`}
                   className="text-sm text-primary hover:underline flex items-center gap-1.5"

@@ -19,6 +19,12 @@ export interface LoginCredentials {
 export interface RegisterCredentials {
   email: string;
   password: string;
+  // Данные для подтверждения в сетевом журнале
+  last_name: string;
+  first_name: string;
+  middle_name?: string;
+  group_code: string;
+  birthday?: string;
 }
 
 // Student Profile
@@ -28,15 +34,21 @@ export interface StudentProfile {
   email: string;
   first_name: string | null;
   last_name: string | null;
+  middle_name?: string | null;
   group_name: string | null;
+  birthday?: string | null;
   total_points?: number;
   total_som?: number;
+  is_verified?: boolean;
 }
 
 export interface StudentProfileUpdate {
   first_name?: string;
   last_name?: string;
   group_name?: string;
+  // Данные для повторной верификации в журнале
+  middle_name?: string;
+  birthday?: string;
 }
 
 // Справочники
@@ -168,6 +180,7 @@ export interface AdminStudentItem {
   roles_count: number;
   total_points: number;
   total_som: number;
+  is_verified?: boolean;
 }
 
 export interface AdminStudentsResponse {

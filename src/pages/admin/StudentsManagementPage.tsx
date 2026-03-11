@@ -16,6 +16,8 @@ import {
   Award,
   Coins,
   Edit3,
+  CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
 import {
   useAdminStudents,
@@ -82,7 +84,14 @@ function StudentRow({
       <div className="flex-1 min-w-0 grid grid-cols-1 sm:grid-cols-4 gap-1 sm:gap-3">
         {/* Имя и email */}
         <div className="min-w-0">
-          <p className="font-medium truncate">{fullName || "Не указано"}</p>
+          <p className="font-medium truncate flex items-center gap-1.5">
+            <span className="truncate">{fullName || "Не указано"}</span>
+            {student.is_verified ? (
+              <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
+            ) : (
+              <AlertCircle className="h-4 w-4 text-red-500 flex-shrink-0" />
+            )}
+          </p>
           <p className="text-sm text-muted-foreground truncate flex items-center gap-1">
             <Mail className="h-3 w-3 flex-shrink-0" />
             {student.email}
