@@ -88,6 +88,27 @@ export function usePointCategories() {
   });
 }
 
+export function useCreatePointCategory() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: { name: string; points: number; is_penalty: boolean }) =>
+      adminApi.createPointCategory(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.pointCategories() });
+    },
+  });
+}
+
+export function useDeletePointCategory() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (categoryId: number) => adminApi.deletePointCategory(categoryId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.pointCategories() });
+    },
+  });
+}
+
 // Admin users management
 export function useAdminUsers() {
   return useQuery<AdminUserItem[]>({

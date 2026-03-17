@@ -72,9 +72,13 @@ export const studentApi = {
   },
 
   // Rating
-  getRating: async (page = 1, perPage = 20): Promise<RatingResponse> => {
+  getRating: async (
+    page = 1,
+    perPage = 20,
+    type: "total" | "month" = "total"
+  ): Promise<RatingResponse> => {
     const { data } = await apiClient.get<RatingResponse>("/students/rating", {
-      params: { page, per_page: perPage },
+      params: { page, per_page: perPage, type },
     });
     return data;
   },

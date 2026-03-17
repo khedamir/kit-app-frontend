@@ -289,6 +289,9 @@ export function ProfilePage() {
                     <p className="text-2xl font-bold">
                       {profile.total_points || 0}
                     </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      За месяц: {profile.current_month_points ?? 0}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1 text-primary text-sm">

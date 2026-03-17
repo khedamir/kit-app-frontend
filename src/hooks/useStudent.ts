@@ -106,9 +106,13 @@ export function useStudentById(studentId: number | null) {
   });
 }
 
-export function useRating(page = 1, perPage = 20) {
+export function useRating(
+  page = 1,
+  perPage = 20,
+  type: "total" | "month" = "total"
+) {
   return useQuery({
-    queryKey: [...studentKeys.rating(), page, perPage],
-    queryFn: () => studentApi.getRating(page, perPage),
+    queryKey: [...studentKeys.rating(), page, perPage, type],
+    queryFn: () => studentApi.getRating(page, perPage, type),
   });
 }

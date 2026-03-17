@@ -39,6 +39,7 @@ export interface StudentProfile {
   birthday?: string | null;
   total_points?: number;
   total_som?: number;
+  current_month_points?: number;
   is_verified?: boolean;
 }
 
@@ -109,6 +110,7 @@ export interface RatingStudent {
   group_name: string | null;
   total_points: number;
   total_som: number;
+  current_month_points: number;
 }
 
 export interface RatingResponse {

@@ -8,6 +8,7 @@ import {
   Heart,
   Users,
   FolderOpen,
+  Award,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,9 @@ import {
   useDeleteInterest,
   useCreateRole,
   useDeleteRole,
+  usePointCategories,
+  useCreatePointCategory,
+  useDeletePointCategory,
 } from "@/hooks/useAdmin";
 
 export function ReferenceManagementPage() {
@@ -52,6 +56,10 @@ export function ReferenceManagementPage() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="w-full flex flex-nowrap overflow-x-auto overflow-y-hidden gap-1 py-1.5 px-1 sm:flex-wrap sm:overflow-visible sm:inline-flex sm:w-auto sm:py-1 justify-start sm:justify-center [-webkit-overflow-scrolling:touch]">
+          <TabsTrigger value="points" className="shrink-0">
+            <Award className="h-4 w-4 shrink-0 mr-1 sm:mr-1.5" />
+            Баллы
+          </TabsTrigger>
           <TabsTrigger value="categories" className="shrink-0">
             <FolderOpen className="h-4 w-4 shrink-0 mr-1 sm:mr-1.5" />
             <span>Категории <span className="hidden sm:inline"> навыков</span></span>
@@ -70,6 +78,9 @@ export function ReferenceManagementPage() {
           </TabsTrigger>
         </TabsList>
 
+        <TabsContent value="points">
+          <PointsCriteriaTab />
+        </TabsContent>
         <TabsContent value="categories">
           <SkillCategoriesTab />
         </TabsContent>
@@ -84,6 +95,197 @@ export function ReferenceManagementPage() {
         </TabsContent>
       </Tabs>
     </div>
+  );
+}
+
+function PointsCriteriaTab() {
+  const [name, setName] = useState("");
+  const [points, setPoints] = useState("");
+  const [type, setType] = useState<"reward" | "penalty">("reward");
+  const [confirm, setConfirm] = useState<{ id: number; label: string } | null>(null);
+  const { showSuccess } = useToast();
+
+  const { data, isLoading } = usePointCategories();
+  const create = useCreatePointCategory();
+  const remove = useDeletePointCategory();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmedName = name.trim();
+    if (!trimmedName) return;
+    const raw = Number(points);
+    if (!Number.isFinite(raw) || raw <= 0) return;
+    const value = Math.abs(raw);
+    const signedPoints = type === "penalty" ? -value : value;
+
+    create.mutate(
+      { name: trimmedName, points: signedPoints, is_penalty: type === "penalty" },
+      {
+        onSuccess: () => {
+          setName("");
+          setPoints("");
+          setType("reward");
+          showSuccess("Критерий добавлен");
+        },
+        onError: () => {},
+      }
+    );
+  };
+
+  const handleDeleteConfirm = () => {
+    if (confirm) {
+      remove.mutate(confirm.id, { onSettled: () => setConfirm(null) });
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  const categories = data?.categories ?? [];
+
+  return (
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Критерии начисления баллов</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Определите список критериев (награды и штрафы), по которым администраторам будет удобно начислять баллы студентам.
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-4 gap-2 items-end">
+            <div className="sm:col-span-2 space-y-1">
+              <Label htmlFor="points-name">Название</Label>
+              <Input
+                id="points-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Например: Победа в хакатоне"
+                disabled={create.isPending}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="points-value">Баллы</Label>
+              <Input
+                id="points-value"
+                type="number"
+                min={1}
+                value={points}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  // Разрешаем только пустую строку или положительные числа
+                  if (v === "") {
+                    setPoints("");
+                    return;
+                  }
+                  const n = Number(v);
+                  if (!Number.isFinite(n) || n <= 0) return;
+                  setPoints(String(Math.abs(n)));
+                }}
+                placeholder="10"
+                disabled={create.isPending}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="points-type">Тип</Label>
+              <Select
+                value={type}
+                onChange={(value) => setType(value as "reward" | "penalty")}
+                options={[
+                  { value: "reward", label: "Награда (плюс)" },
+                  { value: "penalty", label: "Штраф (минус)" },
+                ]}
+              />
+            </div>
+            <div className="sm:col-span-4 flex justify-end pt-1">
+              <Button
+                type="submit"
+                disabled={
+                  !name.trim() ||
+                  !points.trim() ||
+                  !Number.isFinite(Number(points)) ||
+                  Number(points) <= 0 ||
+                  create.isPending
+                }
+              >
+                {create.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Plus className="h-4 w-4" />
+                )}
+                Добавить критерий
+              </Button>
+            </div>
+          </form>
+
+          {create.isError && (
+            <p className="text-sm text-destructive">
+              {getApiErrorMessage(create.error)}
+            </p>
+          )}
+
+          <ul className="divide-y">
+            {categories.length === 0 ? (
+              <li className="py-6 text-center text-muted-foreground text-sm">
+                Нет критериев. Добавьте первый.
+              </li>
+            ) : (
+              categories.map((c) => (
+                <li key={c.id} className="flex items-center justify-between py-2">
+                  <div>
+                    <p className="font-medium flex items-center gap-2">
+                      {c.name}
+                      <span
+                        className={
+                          c.points >= 0 ? "text-emerald-500 text-sm" : "text-red-500 text-sm"
+                        }
+                      >
+                        {c.points > 0 ? `+${c.points}` : c.points} баллов
+                      </span>
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {c.is_custom
+                        ? "Произвольное начисление/списание"
+                        : c.is_penalty
+                          ? "Штраф"
+                          : "Награда"}
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-destructive hover:text-destructive"
+                    onClick={() =>
+                      setConfirm({
+                        id: c.id,
+                        label: c.name,
+                      })
+                    }
+                    disabled={remove.isPending || c.is_custom}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </li>
+              ))
+            )}
+          </ul>
+        </CardContent>
+      </Card>
+      <ConfirmDialog
+        open={!!confirm}
+        onOpenChange={(open) => !open && setConfirm(null)}
+        title="Удалить критерий?"
+        description={`Вы уверены, что хотите удалить критерий «${confirm?.label ?? ""}»? Он перестанет быть доступен при начислении баллов.`}
+        confirmLabel="Удалить"
+        onConfirm={handleDeleteConfirm}
+        isLoading={remove.isPending}
+      />
+    </>
   );
 }
 

@@ -85,6 +85,19 @@ export const adminApi = {
     return data;
   },
 
+  createPointCategory: async (payload: {
+    name: string;
+    points: number;
+    is_penalty: boolean;
+  }): Promise<PointCategory> => {
+    const { data } = await apiClient.post<PointCategory>("/admins/points/categories", payload);
+    return data;
+  },
+
+  deletePointCategory: async (categoryId: number): Promise<void> => {
+    await apiClient.delete(`/admins/points/categories/${categoryId}`);
+  },
+
   addStudentPoints: async (studentId: number, request: AddPointsRequest): Promise<AddPointsResponse> => {
     const { data } = await apiClient.post<AddPointsResponse>(
       `/admins/students/${studentId}/points`,

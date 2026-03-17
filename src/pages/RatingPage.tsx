@@ -22,8 +22,9 @@ import type { RatingStudent } from "@/types";
 export function RatingPage() {
   const [page, setPage] = useState(1);
   const perPage = 20;
+  const [type, setType] = useState<"total" | "month">("total");
 
-  const { data, isLoading, error } = useRating(page, perPage);
+  const { data, isLoading, error } = useRating(page, perPage, type);
   const { data: skillMap } = useSkillMap();
   
   // ID профиля текущего пользователя
@@ -57,19 +58,64 @@ export function RatingPage() {
           Рейтинг студентов
         </h1>
         <p className="text-muted-foreground mt-1">
-          Топ студентов по количеству баллов за учебный год
+          {type === "total"
+            ? "Топ студентов по общему количеству баллов"
+            : "Топ студентов по баллам за текущий месяц"}
         </p>
+      </div>
+
+      {/* Toggle total / month */}
+      <div className="inline-flex rounded-lg border border-border bg-muted/40 p-1 text-xs sm:text-sm">
+        <Button
+          type="button"
+          variant={type === "total" ? "default" : "ghost"}
+          size="sm"
+          className="rounded-md"
+          onClick={() => {
+            setType("total");
+            setPage(1);
+          }}
+        >
+          За всё время
+        </Button>
+        <Button
+          type="button"
+          variant={type === "month" ? "default" : "ghost"}
+          size="sm"
+          className="rounded-md"
+          onClick={() => {
+            setType("month");
+            setPage(1);
+          }}
+        >
+          За месяц
+        </Button>
       </div>
 
       {/* Top 3 Podium (only on first page) */}
       {page === 1 && students.length >= 3 && (
         <div className="grid grid-cols-3 gap-3 sm:gap-4">
           {/* 2nd place */}
-          <PodiumCard student={students[1]} place={2} isCurrentUser={students[1].id === currentProfileId} />
+          <PodiumCard
+            student={students[1]}
+            place={2}
+            isCurrentUser={students[1].id === currentProfileId}
+            type={type}
+          />
           {/* 1st place */}
-          <PodiumCard student={students[0]} place={1} isCurrentUser={students[0].id === currentProfileId} />
+          <PodiumCard
+            student={students[0]}
+            place={1}
+            isCurrentUser={students[0].id === currentProfileId}
+            type={type}
+          />
           {/* 3rd place */}
-          <PodiumCard student={students[2]} place={3} isCurrentUser={students[2].id === currentProfileId} />
+          <PodiumCard
+            student={students[2]}
+            place={3}
+            isCurrentUser={students[2].id === currentProfileId}
+            type={type}
+          />
         </div>
       )}
 
@@ -86,10 +132,11 @@ export function RatingPage() {
         <CardContent className="p-0">
           <div className="divide-y">
             {students.map((student) => (
-              <StudentRow 
-                key={student.id} 
-                student={student} 
+              <StudentRow
+                key={student.id}
+                student={student}
                 isCurrentUser={student.id === currentProfileId}
+                type={type}
               />
             ))}
 
@@ -131,7 +178,17 @@ export function RatingPage() {
 }
 
 // Podium Card for Top 3
-function PodiumCard({ student, place, isCurrentUser }: { student: RatingStudent; place: 1 | 2 | 3; isCurrentUser?: boolean }) {
+function PodiumCard({
+  student,
+  place,
+  isCurrentUser,
+  type,
+}: {
+  student: RatingStudent;
+  place: 1 | 2 | 3;
+  isCurrentUser?: boolean;
+  type: "total" | "month";
+}) {
   const initials =
     student.first_name && student.last_name
       ? `${student.first_name[0]}${student.last_name[0]}`
@@ -213,7 +270,7 @@ function PodiumCard({ student, place, isCurrentUser }: { student: RatingStudent;
         <div className="mt-3 flex flex-col items-center gap-1">
           <div className="flex items-center gap-1 text-amber-500 font-bold text-lg sm:text-xl">
             <Award className="h-4 w-4 sm:h-5 sm:w-5" />
-            {student.total_points}
+            {type === "total" ? student.total_points : student.current_month_points}
           </div>
           <div className="flex items-center gap-1 text-green-500 text-xs sm:text-sm">
             <Coins className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -226,7 +283,15 @@ function PodiumCard({ student, place, isCurrentUser }: { student: RatingStudent;
 }
 
 // Student Row
-function StudentRow({ student, isCurrentUser }: { student: RatingStudent; isCurrentUser?: boolean }) {
+function StudentRow({
+  student,
+  isCurrentUser,
+  type,
+}: {
+  student: RatingStudent;
+  isCurrentUser?: boolean;
+  type: "total" | "month";
+}) {
   const initials =
     student.first_name && student.last_name
       ? `${student.first_name[0]}${student.last_name[0]}`
@@ -306,7 +371,9 @@ function StudentRow({ student, isCurrentUser }: { student: RatingStudent; isCurr
       <div className="flex items-center gap-3 sm:gap-4">
         <div className="flex items-center gap-1 text-amber-500">
           <Award className="h-4 w-4" />
-          <span className="font-semibold">{student.total_points}</span>
+          <span className="font-semibold">
+            {type === "total" ? student.total_points : student.current_month_points}
+          </span>
         </div>
         <div className="flex items-center gap-1 text-green-500 text-sm">
           <Coins className="h-3.5 w-3.5" />
