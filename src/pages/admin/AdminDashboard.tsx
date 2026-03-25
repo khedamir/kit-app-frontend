@@ -10,6 +10,7 @@ import {
   BookOpen,
   Shield,
   Trash2,
+  Store,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -283,6 +284,25 @@ export function AdminDashboard() {
             <CardContent>
               <p className="text-sm text-muted-foreground mb-3">
                 Навыки, интересы и роли для анкеты студентов
+              </p>
+              <span className="text-sm text-primary flex items-center gap-1">
+                Перейти <ArrowRight className="h-4 w-4" />
+              </span>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link to="/admin/shop">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Store className="h-5 w-5 text-primary" />
+                Магазин
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-3">
+                Добавление товаров и обработка заявок на покупку
               </p>
               <span className="text-sm text-primary flex items-center gap-1">
                 Перейти <ArrowRight className="h-4 w-4" />

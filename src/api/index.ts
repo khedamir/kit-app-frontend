@@ -4,3 +4,4 @@ export { studentApi } from "./student";
 export { adminApi } from "./admin";
 export { referencesApi } from "./references";
 export * as forumApi from "./forum";
+export { shopApi } from "./shop";

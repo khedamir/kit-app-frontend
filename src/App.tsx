@@ -16,10 +16,12 @@ const RegisterPage = lazy(() => import("@/pages/RegisterPage").then(m => ({ defa
 const ProfilePage = lazy(() => import("@/pages/ProfilePage").then(m => ({ default: m.ProfilePage })));
 const RecommendationsPage = lazy(() => import("@/pages/RecommendationsPage").then(m => ({ default: m.RecommendationsPage })));
 const ShopPage = lazy(() => import("@/pages/ShopPage").then(m => ({ default: m.ShopPage })));
+const ShopItemPage = lazy(() => import("@/pages/ShopItemPage").then(m => ({ default: m.ShopItemPage })));
 const HomePage = lazy(() => import("@/pages/HomePage").then(m => ({ default: m.HomePage })));
 const StudentsManagementPage = lazy(() => import("@/pages/admin/StudentsManagementPage").then(m => ({ default: m.StudentsManagementPage })));
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
 const ReferenceManagementPage = lazy(() => import("@/pages/admin/ReferenceManagementPage").then(m => ({ default: m.ReferenceManagementPage })));
+const ShopManagementPage = lazy(() => import("@/pages/admin/ShopManagementPage").then(m => ({ default: m.ShopManagementPage })));
 const ForumPage = lazy(() => import("@/pages/ForumPage").then(m => ({ default: m.ForumPage })));
 const TopicPage = lazy(() => import("@/pages/TopicPage").then(m => ({ default: m.TopicPage })));
 const RatingPage = lazy(() => import("@/pages/RatingPage").then(m => ({ default: m.RatingPage })));
@@ -111,6 +113,7 @@ function AppRoutes() {
         <Route path="/recommendations" element={<RecommendationsPage />} />
         <Route path="/rating" element={<RatingPage />} />
         <Route path="/shop" element={<ShopPage />} />
+        <Route path="/shop/:itemId" element={<ShopItemPage />} />
       </Route>
 
       {/* Admin Routes */}
@@ -124,6 +127,7 @@ function AppRoutes() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin/students" element={<StudentsManagementPage />} />
         <Route path="/admin/reference" element={<ReferenceManagementPage />} />
+        <Route path="/admin/shop" element={<ShopManagementPage />} />
       </Route>
 
       {/* Common Routes (for all authenticated users) */}

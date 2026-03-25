@@ -269,6 +269,39 @@ export interface AddPointsResponse {
   };
 }
 
+// Shop
+export interface ShopItem {
+  id: number;
+  name: string;
+  description: string | null;
+  price_som: number;
+  quantity: number;
+  photos: string[];
+  sizes: string[];
+  is_active: boolean;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+export interface ShopPurchaseRequest {
+  id: number;
+  status: "pending" | "approved" | "rejected" | "completed";
+  quantity: number;
+  selected_size: string | null;
+  total_price_som: number;
+  admin_comment: string | null;
+  approved_pickup_at: string | null;
+  created_at: string | null;
+  student: {
+    id: number;
+    first_name: string | null;
+    last_name: string | null;
+    group_name: string | null;
+    email: string | null;
+  } | null;
+  item: ShopItem | null;
+}
+
 // Forum
 export interface ForumAuthor {
   id: number;
