@@ -242,16 +242,6 @@ export function AdminDashboard() {
         </CardContent>
       </Card>
 
-      {/* Dashboard Header */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <LayoutDashboard className="h-5 w-5 text-primary" />
-            Панель управления
-          </CardTitle>
-        </CardHeader>
-      </Card>
-
       {/* Admin Features */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Link to="/admin/students">
