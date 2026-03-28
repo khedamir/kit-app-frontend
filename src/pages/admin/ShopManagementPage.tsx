@@ -19,6 +19,7 @@ import {
   useCompletePurchaseRequest,
   useCreateAdminShopItem,
   useDeleteAdminShopItem,
+  usePermanentDeleteAdminShopItem,
   useRejectPurchaseRequest,
   useUpdateAdminShopItem,
 } from "@/hooks/useShop";
@@ -78,6 +79,7 @@ export function ShopManagementPage() {
   const createItem = useCreateAdminShopItem();
   const updateItem = useUpdateAdminShopItem();
   const deleteItem = useDeleteAdminShopItem();
+  const permanentDeleteItem = usePermanentDeleteAdminShopItem();
   const approveRequest = useApprovePurchaseRequest();
   const rejectRequest = useRejectPurchaseRequest();
   const completeRequest = useCompletePurchaseRequest();
@@ -212,6 +214,22 @@ export function ShopManagementPage() {
     try {
       await deleteItem.mutateAsync(id);
       showSuccess("Товар скрыт из каталога");
+      setDeletingItem(null);
+      setSelectedItem((prev) => (prev?.id === id ? null : prev));
+      setEditingItem((prev) => (prev?.id === id ? null : prev));
+    } catch (err) {
+      setCreateError(getApiErrorMessage(err, "Не удалось удалить товар"));
+      setDeletingItem(null);
+    }
+  };
+
+  const onConfirmPermanentDelete = async () => {
+    if (!deletingItem) return;
+    const id = deletingItem.id;
+    if ((deletingItem.purchase_requests_count ?? 0) > 0) return;
+    try {
+      await permanentDeleteItem.mutateAsync(id);
+      showSuccess("Товар удалён безвозвратно");
       setDeletingItem(null);
       setSelectedItem((prev) => (prev?.id === id ? null : prev));
       setEditingItem((prev) => (prev?.id === id ? null : prev));
@@ -643,22 +661,45 @@ export function ShopManagementPage() {
         <DialogContent onClose={() => setDeletingItem(null)}>
           <DialogHeader>
             <DialogTitle>Удалить товар?</DialogTitle>
-            <DialogDescription>
-              «{deletingItem?.name}» будет скрыт из каталога студентов. Связанные заявки сохранятся.
+            <DialogDescription className="space-y-2">
+              <span>
+                «{deletingItem?.name}» можно скрыть из каталога (заявки сохранятся) или удалить полностью — только
+                если на этот товар ещё не было заявок.
+              </span>
+              {deletingItem && (deletingItem.purchase_requests_count ?? 0) > 0 && (
+                <span className="block text-amber-600 dark:text-amber-500">
+                  Заявок: {deletingItem.purchase_requests_count}. Полное удаление недоступно.
+                </span>
+              )}
             </DialogDescription>
           </DialogHeader>
-          <div className="flex justify-end gap-2 pt-2">
+          <div className="flex flex-wrap justify-end gap-2 pt-2">
             <Button type="button" variant="outline" onClick={() => setDeletingItem(null)}>
               Отмена
             </Button>
             <Button
               type="button"
               variant="destructive"
-              disabled={deleteItem.isPending}
+              disabled={deleteItem.isPending || permanentDeleteItem.isPending}
               onClick={() => void onConfirmDelete()}
             >
               {deleteItem.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Скрыть из каталога"}
             </Button>
+            {deletingItem != null && (deletingItem.purchase_requests_count ?? 0) === 0 && (
+              <Button
+                type="button"
+                variant="outline"
+                className="border-destructive text-destructive hover:bg-destructive/10"
+                disabled={deleteItem.isPending || permanentDeleteItem.isPending}
+                onClick={() => void onConfirmPermanentDelete()}
+              >
+                {permanentDeleteItem.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  "Удалить навсегда"
+                )}
+              </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>

@@ -99,6 +99,18 @@ export function useDeleteAdminShopItem() {
   });
 }
 
+export function usePermanentDeleteAdminShopItem() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: shopApi.deleteAdminItemPermanent,
+    onSuccess: (_data, itemId) => {
+      queryClient.invalidateQueries({ queryKey: shopKeys.adminItems() });
+      queryClient.invalidateQueries({ queryKey: shopKeys.items() });
+      queryClient.invalidateQueries({ queryKey: shopKeys.item(itemId) });
+    },
+  });
+}
+
 export function useAdminPurchaseRequests(status?: "pending" | "approved" | "rejected" | "completed") {
   return useQuery({
     queryKey: shopKeys.adminRequests(status),

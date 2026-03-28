@@ -281,6 +281,8 @@ export interface ShopItem {
   is_active: boolean;
   created_at: string | null;
   updated_at: string | null;
+  /** Только в ответе GET /admins/shop/items */
+  purchase_requests_count?: number;
 }
 
 export interface ShopPurchaseRequest {

@@ -117,6 +117,11 @@ export const shopApi = {
     await apiClient.delete(`/admins/shop/items/${itemId}`);
   },
 
+  /** Полное удаление товара и файлов; 409 если есть заявки. */
+  deleteAdminItemPermanent: async (itemId: number): Promise<void> => {
+    await apiClient.delete(`/admins/shop/items/${itemId}/permanent`);
+  },
+
   getAdminPurchaseRequests: async (
     status?: "pending" | "approved" | "rejected" | "completed"
   ): Promise<{ requests: ShopPurchaseRequest[] }> => {
