@@ -68,11 +68,22 @@ export function useCreateAdminShopItem() {
 export function useUpdateAdminShopItem() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ itemId, payload }: { itemId: number; payload: Parameters<typeof shopApi.updateAdminItem>[1] }) =>
-      shopApi.updateAdminItem(itemId, payload),
-    onSuccess: () => {
+    mutationFn: ({
+      itemId,
+      payload,
+    }: {
+      itemId: number;
+      payload:
+        | Parameters<typeof shopApi.updateAdminItem>[1]
+        | { multipart: true; body: Parameters<typeof shopApi.updateAdminItemMultipart>[1] };
+    }) =>
+      "multipart" in payload && payload.multipart
+        ? shopApi.updateAdminItemMultipart(itemId, payload.body)
+        : shopApi.updateAdminItem(itemId, payload as Parameters<typeof shopApi.updateAdminItem>[1]),
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: shopKeys.adminItems() });
       queryClient.invalidateQueries({ queryKey: shopKeys.items() });
+      queryClient.invalidateQueries({ queryKey: shopKeys.item(variables.itemId) });
     },
   });
 }

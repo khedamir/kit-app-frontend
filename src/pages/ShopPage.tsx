@@ -12,15 +12,8 @@ import { useCreatePurchaseRequest, useMyPurchaseRequests, useShopItems } from "@
 import { useSkillMap } from "@/hooks/useStudent";
 import { useToast } from "@/components/ui/toast";
 import { getApiErrorMessage } from "@/lib/error-handler";
+import { resolveShopImageUrl } from "@/lib/resolve-shop-image-url";
 import type { ShopItem } from "@/types";
-
-const API_ORIGIN = (import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1").replace(/\/api\/v1\/?$/, "");
-
-function resolveImageUrl(url: string | undefined): string | null {
-  if (!url) return null;
-  if (url.startsWith("http://") || url.startsWith("https://")) return url;
-  return `${API_ORIGIN}${url.startsWith("/") ? url : `/${url}`}`;
-}
 
 function getRequestStatusLabel(status: string): string {
   switch (status) {
@@ -130,7 +123,7 @@ export function ShopPage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {items.map((item) => {
-                const firstPhoto = resolveImageUrl(item.photos?.[0]);
+                const firstPhoto = resolveShopImageUrl(item.photos?.[0]);
                 return (
                 <Card key={item.id}>
                   <CardHeader className="pb-2">
@@ -215,9 +208,9 @@ export function ShopPage() {
           </DialogHeader>
 
           <div className="space-y-3">
-            {selectedItem && resolveImageUrl(selectedItem.photos?.[0]) && (
+            {selectedItem && resolveShopImageUrl(selectedItem.photos?.[0]) && (
               <img
-                src={resolveImageUrl(selectedItem.photos?.[0]) || ""}
+                src={resolveShopImageUrl(selectedItem.photos?.[0]) || ""}
                 alt={selectedItem.name}
                 className="w-full max-w-[280px] aspect-square object-contain rounded-md border bg-muted p-1 mx-auto"
               />

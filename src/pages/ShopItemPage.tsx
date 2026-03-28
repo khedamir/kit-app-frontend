@@ -18,17 +18,7 @@ import { useCreatePurchaseRequest, useShopItem } from "@/hooks/useShop";
 import { useSkillMap } from "@/hooks/useStudent";
 import { useToast } from "@/components/ui/toast";
 import { getApiErrorMessage } from "@/lib/error-handler";
-
-const API_ORIGIN = (import.meta.env.VITE_API_URL || "http://localhost:5000/api/v1").replace(
-  /\/api\/v1\/?$/,
-  ""
-);
-
-function resolveImageUrl(url: string | undefined): string | null {
-  if (!url) return null;
-  if (url.startsWith("http://") || url.startsWith("https://")) return url;
-  return `${API_ORIGIN}${url.startsWith("/") ? url : `/${url}`}`;
-}
+import { resolveShopImageUrl } from "@/lib/resolve-shop-image-url";
 
 export function ShopItemPage() {
   const params = useParams();
@@ -46,7 +36,7 @@ export function ShopItemPage() {
 
   const totalSom = skillMap?.profile?.total_som || 0;
   const photos = item?.photos || [];
-  const photoUrl = resolveImageUrl(photos[activePhotoIndex]);
+  const photoUrl = resolveShopImageUrl(photos[activePhotoIndex]);
   const selectedTotalPrice = useMemo(() => (item ? item.price_som * quantity : 0), [item, quantity]);
 
   const openBuy = () => {
@@ -159,7 +149,7 @@ export function ShopItemPage() {
                     }`}
                   >
                     <img
-                      src={resolveImageUrl(p) || ""}
+                      src={resolveShopImageUrl(p) || ""}
                       alt={`${item.name} ${idx + 1}`}
                       className="w-full h-full object-cover"
                     />
@@ -211,9 +201,9 @@ export function ShopItemPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
-            {resolveImageUrl(item.photos?.[0]) && (
+            {resolveShopImageUrl(item.photos?.[0]) && (
               <img
-                src={resolveImageUrl(item.photos?.[0]) || ""}
+                src={resolveShopImageUrl(item.photos?.[0]) || ""}
                 alt={item.name}
                 className="w-full max-w-[280px] aspect-square object-contain rounded-md border bg-muted p-1 mx-auto"
               />
