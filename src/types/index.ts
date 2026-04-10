@@ -376,3 +376,25 @@ export interface CreateMessageInput {
 export interface UpdateMessageInput {
   content: string;
 }
+
+// Notifications
+export interface NotificationItem {
+  id: number;
+  type: string;
+  title: string;
+  body: string | null;
+  payload: Record<string, unknown>;
+  is_read: boolean;
+  created_at: string | null;
+}
+
+export interface NotificationsResponse {
+  items: NotificationItem[];
+  unread_count: number;
+  pagination: {
+    page: number;
+    per_page: number;
+    total: number;
+    pages: number;
+  };
+}

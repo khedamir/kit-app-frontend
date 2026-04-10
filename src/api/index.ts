@@ -5,3 +5,4 @@ export { adminApi } from "./admin";
 export { referencesApi } from "./references";
 export * as forumApi from "./forum";
 export { shopApi } from "./shop";
+export { notificationsApi } from "./notifications";
