@@ -55,7 +55,7 @@ export function HomePage() {
           <span className="text-primary">KIT Platform</span>
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-          Платформа для студентов КИТ — находи единомышленников, формируй команды 
+          Платформа для студентов ГГКИТ — находи единомышленников, формируй команды 
           для проектной деятельности и развивай свои навыки вместе
         </p>
 
